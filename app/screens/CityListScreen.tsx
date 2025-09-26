@@ -7,7 +7,8 @@ const API_KEY = '936c83de32d0fc44640fea0253cc0ea2';
 
 const CITIES = [
   { name: 'Cape Town', q: 'Cape Town,ZA' },
-  { name: 'Gqeberha', q: 'Gqeberha,ZA' },
+
+  { name: 'Johannesburg', q: 'Johannesburg,ZA' },
   { name: 'Durban', q: 'Durban,ZA' },
   { name: 'Pretoria', q: 'Pretoria,ZA' },
 ];
@@ -21,16 +22,20 @@ export default function CityListScreen({ navigation }: Props) {
 
   useEffect(() => {
     CITIES.forEach((city) => {
-      fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city.q}&appid=${API_KEY}&units=metric`
-      )
-        .then((res) => {return res.json()})
-        .then((data) =>
-          setCityTemps((prev) => ({ ...prev, [city.q]: data.main.temp }))
-        )
-        .catch(console.error);
+      fetchWeather(city.q);
     });
   }, []);
+
+ 
+
+  const fetchWeather = async (city: string) => {
+    const weather = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
+    );
+    const data = await weather.json();
+    setCityTemps((prev) => ({ ...prev, [city]: data.main.temp }));
+  };
+  
 
   return (
     <View style={styles.container}>

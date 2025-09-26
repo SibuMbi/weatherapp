@@ -13,7 +13,7 @@ type WeatherData = {
   temp: number;
   wind: number;
   humidity: number;
-  hourly: { dt: number; temp: number; weather: { icon: string }[] }[];
+  hourly: { dt: number; main: {temp: number;}, weather: { icon: string }[] }[];
 };
 
 export default function CityDetailsScreen({ route }: Props) {
@@ -35,7 +35,7 @@ export default function CityDetailsScreen({ route }: Props) {
       const { coord } = currentData;
 
       const forecastRes = await fetch(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${coord.lat}&lon=${coord.lon}&exclude=minutely,alerts&appid=936c83de32d0fc44640fea0253cc0ea2&units=metric`
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${coord.lat}&lon=${coord.lon}&appid=936c83de32d0fc44640fea0253cc0ea2&units=metric`
       );
       const forecastData = await forecastRes.json();
 
@@ -43,7 +43,7 @@ export default function CityDetailsScreen({ route }: Props) {
         temp: currentData.main.temp,
         wind: currentData.wind.speed,
         humidity: currentData.main.humidity,
-        hourly: forecastData.hourly.slice(0, 24),
+        hourly: forecastData.list.slice(0, 16),
       });
     } catch (err) {
       console.error(err);
@@ -64,7 +64,7 @@ export default function CityDetailsScreen({ route }: Props) {
             uri: `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`,
           }}
         />
-        <Text style={styles.forecastTemp}>{Math.round(item.temp)}°C</Text>
+        <Text style={styles.forecastTemp}>{Math.round(item.main.temp)}°C</Text>
       </View>
     );
   };
